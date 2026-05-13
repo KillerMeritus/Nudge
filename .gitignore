@@ -1,0 +1,52 @@
+# ─── DATA FILES (never commit) ───────────────────────────────────────────────
+backend/data/
+scraper/data/
+*.json.lock
+
+# ─── PYTHON ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+.eggs/
+.venv/
+venv/
+env/
+*.egg
+
+# ─── NODE / NPM ──────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── VITE BUILD OUTPUT ───────────────────────────────────────────────────────
+dist/
+dist-ssr/
+*.local
+
+# ─── RUST / CARGO ────────────────────────────────────────────────────────────
+target/
+Cargo.lock
+
+# ─── TAURI ───────────────────────────────────────────────────────────────────
+src-tauri/target/
+src-tauri/WixTools/
+
+# ─── macOS ───────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ─── EDITOR ──────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ─── ENV / SECRETS ───────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
