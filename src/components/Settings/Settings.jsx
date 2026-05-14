@@ -7,12 +7,31 @@ export default function Settings() {
   const [workStartTime, setWorkStartTime] = useState('09:00');
   const [workEndTime, setWorkEndTime] = useState('17:00');
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    // TODO: Send settings to backend in Phase 1B
-    console.log('Settings saved:', { apiKey, workStartTime, workEndTime });
-    alert('Settings saved successfully!');
-  };
+  const handleSave = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch("http://localhost:8080/settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gemini_api_key: apiKey,
+        work_start_time: workStartTime,
+        work_end_time: workEndTime,
+      }),
+    });
+
+    const data = await response.json();
+
+    console.log("Saved to backend:", data);
+
+    alert("Settings saved successfully!");
+  } catch (error) {
+    console.error("Settings save failed:", error);
+  }
+};
 
   return (
     <div className={styles.container}>

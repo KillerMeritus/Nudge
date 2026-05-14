@@ -12,13 +12,19 @@ router = APIRouter(prefix="/settings", tags=["settings"])
 
 class SettingsUpdate(BaseModel):
     gemini_api_key: Optional[str] = None
+
+    work_start_time: Optional[str] = None
+    work_end_time: Optional[str] = None
+
     work_duration_minutes: Optional[int] = None
     short_break_minutes: Optional[int] = None
     long_break_minutes: Optional[int] = None
     long_break_after_cycles: Optional[int] = None
+
     long_break_enabled: Optional[bool] = None
     launch_on_startup: Optional[bool] = None
     distraction_detection_enabled: Optional[bool] = None
+
     idle_threshold_seconds: Optional[int] = None
     distraction_whitelist: Optional[list[str]] = None
 
