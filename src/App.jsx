@@ -5,8 +5,9 @@ import TaskList from './components/Tasks/TaskList';
 import Summary from './components/Summary/Summary';
 import Settings from './components/Settings/Settings';
 import styles from './App.module.css';
-// [DEV] Notification utility — remove demo button before shipping v1
+// [DEV] Notification + sound utilities — remove demo button before shipping v1
 import { sendPreset } from './utils/notify';
+import { playSound } from './utils/sound';
 
 const TABS = [
   { id: 'timer',    label: '⏱ Timer' },
@@ -54,10 +55,11 @@ export default function App() {
             color: 'inherit',
           }}
           onClick={async () => {
-            // Fire each preset with a 1-second gap so macOS groups them separately.
+            // Fire notification + sound for each preset with staggered timing.
             await sendPreset('DEEP_WORK_STARTED');
-            setTimeout(() => sendPreset('POMODORO_COMPLETE'), 1000);
-            setTimeout(() => sendPreset('SUMMARY_GENERATED'), 2000);
+            playSound('deep_work_start');
+            setTimeout(() => { sendPreset('POMODORO_COMPLETE'); playSound('pomodoro_complete'); }, 1500);
+            setTimeout(() => { sendPreset('SUMMARY_GENERATED'); playSound('summary_generated'); }, 3000);
           }}
         >
           🔔 Test

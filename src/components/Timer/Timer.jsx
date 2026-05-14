@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import styles from './Timer.module.css';
 import { sendPreset } from '../../utils/notify';
+import { playSound } from '../../utils/sound';
 
 const MODES = {
   focus: { id: 'focus', label: 'Focus', duration: 25 * 60 },
@@ -22,8 +23,9 @@ export default function Timer() {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
-      // Notify user that the Pomodoro / break session has finished.
+      // Notify + sound: session finished.
       sendPreset('POMODORO_COMPLETE');
+      playSound('pomodoro_complete');
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft]);
@@ -31,9 +33,10 @@ export default function Timer() {
   const toggleTimer = () => {
     const starting = !isActive;
     setIsActive(starting);
-    // Fire a "Deep Work Started" notification when kicking off a focus session.
+    // Fire notification + sound when kicking off a focus session.
     if (starting && mode === 'focus') {
       sendPreset('DEEP_WORK_STARTED');
+      playSound('deep_work_start');
     }
   };
 
