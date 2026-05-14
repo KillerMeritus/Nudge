@@ -5,6 +5,9 @@ import TaskList from './components/Tasks/TaskList';
 import Summary from './components/Summary/Summary';
 import Settings from './components/Settings/Settings';
 import styles from './App.module.css';
+// [DEV] Notification + sound utilities — remove demo button before shipping v1
+import { sendPreset } from './utils/notify';
+import { playSound } from './utils/sound';
 
 const TABS = [
   { id: 'timer',    label: '⏱ Timer' },
@@ -35,6 +38,32 @@ export default function App() {
             </button>
           ))}
         </div>
+
+        {/* [DEV] Temporary — test all three notification presets. Remove before v1 release. */}
+        <button
+          id="dev-test-notifications"
+          title="Dev: test notifications"
+          style={{
+            marginLeft: 'auto',
+            padding: '4px 10px',
+            fontSize: '11px',
+            opacity: 0.5,
+            cursor: 'pointer',
+            borderRadius: '6px',
+            border: '1px solid currentColor',
+            background: 'transparent',
+            color: 'inherit',
+          }}
+          onClick={async () => {
+            // Fire notification + sound for each preset with staggered timing.
+            await sendPreset('DEEP_WORK_STARTED');
+            playSound('deep_work_start');
+            setTimeout(() => { sendPreset('POMODORO_COMPLETE'); playSound('pomodoro_complete'); }, 1500);
+            setTimeout(() => { sendPreset('SUMMARY_GENERATED'); playSound('summary_generated'); }, 3000);
+          }}
+        >
+          🔔 Test
+        </button>
       </nav>
 
       {/* ── CONTENT ── */}

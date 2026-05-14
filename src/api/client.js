@@ -6,7 +6,7 @@
  */
 
 const BASE_URL = 'http://localhost:8080';
-const USE_MOCKS = true; // ← FE-1: flip to false when BE-1 is live
+const USE_MOCKS = false; // ← FE-1: flip to false when BE-1 is live
 
 // ─────────────────────────────────────────────
 // MOCK DATA  (matches API contract shapes exactly)
