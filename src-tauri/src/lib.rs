@@ -130,6 +130,10 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            Some(vec!["--autostart"]),
+        ))
         // Register the JS→Rust command
         .invoke_handler(tauri::generate_handler![update_tray_timer])
         // Make TimerState available via tauri::State<>
@@ -163,13 +167,18 @@ pub fn run() {
 
                     if !backend_ready {
                         println!(
-                            "[Nudge] WARNING: backend did not respond within {}s. \
-                             Showing window anyway.",
+                            "[Nudge] WARNING: backend did not respond within {}s.",
                             STARTUP_TIMEOUT.as_secs()
                         );
                     }
 
-                    show_main_window(&handle);
+                    // Only show the window if we were launched manually.
+                    let is_autostart = std::env::args().any(|arg| arg == "--autostart");
+                    if !is_autostart {
+                        show_main_window(&handle);
+                    } else {
+                        println!("[Nudge] Launched via autostart — keeping window hidden in tray.");
+                    }
                 });
             }
 

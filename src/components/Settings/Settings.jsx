@@ -1,11 +1,19 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { enable, disable, isEnabled } from '@tauri-apps/plugin-autostart';
 import styles from './Settings.module.css';
 
 export default function Settings() {
   const [apiKey, setApiKey] = useState('');
   const [workStartTime, setWorkStartTime] = useState('09:00');
   const [workEndTime, setWorkEndTime] = useState('17:00');
+  const [launchOnStartup, setLaunchOnStartup] = useState(false);
+
+  // Load actual OS autostart state on mount
+  useEffect(() => {
+    if (window.__TAURI_INTERNALS__) {
+      isEnabled().then(setLaunchOnStartup).catch(console.error);
+    }
+  }, []);
 
   const handleSave = async (e) => {
   e.preventDefault();
@@ -20,12 +28,22 @@ export default function Settings() {
         gemini_api_key: apiKey,
         work_start_time: workStartTime,
         work_end_time: workEndTime,
+        launch_on_startup: launchOnStartup,
       }),
     });
 
     const data = await response.json();
 
     console.log("Saved to backend:", data);
+
+    // Apply OS autostart registration
+    if (window.__TAURI_INTERNALS__) {
+      if (launchOnStartup) {
+        await enable();
+      } else {
+        await disable();
+      }
+    }
 
     alert("Settings saved successfully!");
   } catch (error) {
@@ -54,6 +72,23 @@ export default function Settings() {
               placeholder="AIzaSy..."
             />
             <p className={styles.helpText}>Required for daily productivity summaries. Your key is stored securely on your device.</p>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>🚀 System</h3>
+          
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              <input 
+                type="checkbox" 
+                checked={launchOnStartup}
+                onChange={(e) => setLaunchOnStartup(e.target.checked)}
+                style={{ marginRight: '8px' }}
+              />
+              Launch Nudge on startup
+            </label>
+            <p className={styles.helpText}>App will start silently in the menu bar on macOS login.</p>
           </div>
         </div>
 
