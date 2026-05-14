@@ -3,6 +3,9 @@ Timer router — in-memory Pomodoro state.
 State resets on server restart (Phase 1, by design).
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import time
 from fastapi import APIRouter
 from backend.storage.settings_store import load_settings
@@ -70,6 +73,7 @@ async def start_timer():
         }
     _state["status"] = "running"
     _state["started_at"] = time.time()
+    logger.info("Timer started — session: %s, remaining: %ds", _state["session_type"], _remaining())
     return {
         "status": "running",
         "session_type": _state["session_type"],
@@ -84,6 +88,7 @@ async def pause_timer():
         _state["elapsed_seconds"] += time.time() - _state["started_at"]
         _state["started_at"] = None
         _state["status"] = "paused"
+        logger.info("Timer paused — remaining: %ds", _remaining())
     return {"status": _state["status"], "remaining_seconds": _remaining()}
 
 
@@ -94,6 +99,7 @@ async def reset_timer():
     _state["session_count"] = 0
     _state["started_at"] = None
     _state["elapsed_seconds"] = 0
+    logger.info("Timer reset to idle.")
     return {"status": "idle"}
 
 

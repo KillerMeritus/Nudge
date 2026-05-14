@@ -3,6 +3,9 @@ Summary router — calls Gemini API with today's activity log, returns structure
 Latest summary kept in memory (Phase 1, by design).
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import json
 import urllib.request
 import urllib.error
@@ -100,19 +103,38 @@ async def generate_summary():
     if log_file.exists():
         try:
             activity_log = json.loads(log_file.read_text())
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Could not read daily_log.json: %s", e)
 
+    if not activity_log:
+        logger.warning("Summary requested but daily log is empty — scraper may not be running.")
+        # Return a graceful placeholder instead of erroring
+        placeholder = (
+            f"NUDGE DAILY SUMMARY — {datetime.now().strftime('%Y-%m-%d')}\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+            "No activity data yet.\n\n"
+            "Start working and run the scraper to capture your activity.\n"
+            "Then come back and generate your summary."
+        )
+        _latest_summary["summary"] = placeholder
+        _latest_summary["score"] = None
+        _latest_summary["generated_at"] = datetime.now().isoformat()
+        return dict(_latest_summary)
+
+    logger.info("Generating summary from %d activity entries.", len(activity_log))
     try:
         summary_text, score = _call_gemini(_build_prompt(activity_log), api_key)
     except urllib.error.HTTPError as e:
+        logger.error("Gemini API HTTP error: %s", e.code)
         raise HTTPException(status_code=502, detail=f"Gemini API error: {e.code}")
     except Exception as e:
+        logger.error("Summary generation failed: %s", e)
         raise HTTPException(status_code=502, detail=f"Failed to generate summary: {str(e)}")
 
     _latest_summary["summary"] = summary_text
     _latest_summary["score"] = score
     _latest_summary["generated_at"] = datetime.now().isoformat()
+    logger.info("Summary generated — score: %s", score)
     return dict(_latest_summary)
 
 

@@ -2,6 +2,9 @@
 Tasks router — full CRUD backed by tasks.json via task_store.
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -55,6 +58,7 @@ async def create_task(body: TaskCreate):
     }
     tasks.append(new_task)
     save_tasks(tasks)
+    logger.info("Task created: %s [%s]", new_task["id"], new_task["title"])
     return new_task
 
 
@@ -63,6 +67,7 @@ async def update_task(task_id: str, body: TaskUpdate):
     tasks = load_tasks()
     idx = next((i for i, t in enumerate(tasks) if t["id"] == task_id), None)
     if idx is None:
+        logger.warning("Task not found for update: %s", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
 
     updates = body.model_dump(exclude_none=True)
@@ -77,6 +82,7 @@ async def update_task(task_id: str, body: TaskUpdate):
 
     tasks[idx] = task
     save_tasks(tasks)
+    logger.info("Task updated: %s — fields: %s", task_id, list(updates.keys()))
     return task
 
 
@@ -85,6 +91,8 @@ async def delete_task(task_id: str):
     tasks = load_tasks()
     new_tasks = [t for t in tasks if t["id"] != task_id]
     if len(new_tasks) == len(tasks):
+        logger.warning("Task not found for delete: %s", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
     save_tasks(new_tasks)
+    logger.info("Task deleted: %s", task_id)
     return {"deleted": True}
