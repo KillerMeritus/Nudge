@@ -2,6 +2,9 @@
 Settings router — read/write settings.json via settings_store.
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional
@@ -40,4 +43,5 @@ async def update_settings(body: SettingsUpdate):
     updates = body.model_dump(exclude_none=True)
     current.update(updates)
     _save(current)
+    logger.info("Settings updated — fields: %s", list(updates.keys()))
     return current
