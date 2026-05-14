@@ -1,4 +1,29 @@
-pyobjc-framework-Cocoa>=10.3; sys_platform == "darwin"
-pyobjc-framework-Quartz>=10.3; sys_platform == "darwin"
-pywin32>=306; sys_platform == "win32"
-psutil>=5.9.8; sys_platform == "win32"
+# BE-2 Scraper Requirements
+# Install with: pip install -r requirements.txt
+
+# Core scraper
+uiautomation>=2.0.18       # Windows UI Automation tree walker
+pynput>=1.7.6              # Mouse/keyboard idle detection
+psutil>=5.9.0              # Process name detection
+
+
+# Sidecar API
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# HTTP (distraction alerts → BE-1, Ollama client)
+requests>=2.31.0
+
+# File locking (for safe JSON writes shared with BE-1)
+filelock>=3.12.0
+
+# Windows-specific (already included in pywin32, listed for clarity)
+pywin32>=306
+
+# AI backends
+google-generativeai>=0.8.0  # Gemini (primary testing backend)
+# Ollama uses plain HTTP via requests — no extra SDK needed
+
+# macOS only (comment in if on macOS):
+# pyobjc-framework-Cocoa>=9.0
+# pyobjc-framework-ApplicationServices>=9.0

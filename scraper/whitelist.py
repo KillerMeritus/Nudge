@@ -1,34 +1,61 @@
-#!/usr/bin/env python3
 """
-whitelist.py — Apps that should never appear in the activity log.
-Add any app name (case-insensitive, partial match) to WHITELIST.
+whitelist.py — BE-2
+Apps excluded from scraping entirely.
+Covers password managers, banking, and system credential prompts.
 """
 
-WHITELIST = [
+# Exact app name matches (case-insensitive substring match against window title + app name)
+WHITELISTED_APPS = [
     # Password managers
-    "1Password",
-    "Bitwarden",
-    "Keychain Access",
-    "LastPass",
-    "Dashlane",
+    "1password",
+    "bitwarden",
+    "lastpass",
+    "dashlane",
+    "keepass",
+    "keychain",
+    "credential",
 
-    # System / auth
-    "SecurityAgent",
-    "UserNotificationCenter",
-    "System Preferences",
-    "System Settings",
-    "Login Window",
+    # Banking / finance
+    "bank",
+    "chase",
+    "wells fargo",
+    "bank of america",
+    "capital one",
+    "paypal",
+    "venmo",
+    "mint",
+    "robinhood",
 
-    # Banking (common macOS app names)
-    "Bank of America",
-    "Chase",
-    "Wells Fargo",
+    # System credential / auth prompts
+    "windows security",
+    "user account control",
+    "uac",
+    "credential manager",
+    "sign in",
+    "authentication",
+    "two-factor",
+    "two factor",
+    "2fa",
+    "verify your identity",
+    "consent.exe",
+    "logonui",
+    "lockapp",
+
+    # VPN / privacy tools
+    "nordvpn",
+    "expressvpn",
+    "mullvad",
+    "protonvpn",
+
+    # Sensitive communication (optional — comment out if you want these scraped)
+    # "signal",
 ]
 
-_LOWER = [name.lower() for name in WHITELIST]
 
-
-def is_whitelisted(app_name: str) -> bool:
-    """Return True if the app_name matches any whitelist entry (case-insensitive, partial)."""
-    lower = app_name.lower()
-    return any(w in lower for w in _LOWER)
+def is_whitelisted(app_name: str, window_title: str) -> bool:
+    """
+    Returns True if the app or window should be excluded from scraping.
+    Checks both app_name and window_title (case-insensitive substring match).
+    """
+    combined = f"{app_name} {window_title}".lower()
+    return any(entry in combined for entry in WHITELISTED_APPS)
