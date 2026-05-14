@@ -37,6 +37,7 @@ pub fn run() {
     // and is revealed only after the backend is confirmed ready.
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let app_handle = app.handle().clone();
 

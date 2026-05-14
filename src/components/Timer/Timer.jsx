@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './Timer.module.css';
+import { sendPreset } from '../../utils/notify';
 
 const MODES = {
   focus: { id: 'focus', label: 'Focus', duration: 25 * 60 },
@@ -21,12 +22,20 @@ export default function Timer() {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
-      // TODO: Play sound or show notification here in Phase 1B
+      // Notify user that the Pomodoro / break session has finished.
+      sendPreset('POMODORO_COMPLETE');
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft]);
 
-  const toggleTimer = () => setIsActive(!isActive);
+  const toggleTimer = () => {
+    const starting = !isActive;
+    setIsActive(starting);
+    // Fire a "Deep Work Started" notification when kicking off a focus session.
+    if (starting && mode === 'focus') {
+      sendPreset('DEEP_WORK_STARTED');
+    }
+  };
 
   const changeMode = (newModeId) => {
     setMode(newModeId);

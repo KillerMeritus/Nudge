@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './Summary.module.css';
+import { sendPreset } from '../../utils/notify';
 
 export default function Summary() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,6 +44,9 @@ export default function Summary() {
       console.log("Generated summary:", data);
 
       setSummaryData(data);
+
+      // Notify the user that their AI summary is ready.
+      await sendPreset('SUMMARY_GENERATED');
     } catch (error) {
       console.error("Summary generation failed:", error);
 
